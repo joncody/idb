@@ -86,7 +86,7 @@ function upgrade(db) {
 }
 
 const idb = {
-    open: function (name, version = 1, fn = () => {}) {
+    open: function (name, version = 1, fn = function () { return; }) {
         if (typeof version === "function") {
             fn = version;
             version = 1;
