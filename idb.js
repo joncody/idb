@@ -110,9 +110,7 @@ const idb = {
         assertName(name, "Database name");
         return promisify(indexedDB.deleteDatabase(name));
     },
-    open: function (name, version = 1, fn = function () {
-        return;
-    }) {
+    open: function (name, version = 1, fn = function () {}) {
         if (typeof version === "function") {
             fn = version;
             version = 1;
