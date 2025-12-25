@@ -62,25 +62,11 @@ function client(db) {
         },
         insert: function (table, value, key) {
             assertName(table, "Table name");
-            const tx = db.transaction([table], "readwrite");
-            const store = tx.objectStore(table);
-            const request = (
-                key === undefined
-                ? store.add(value)
-                : store.add(value, key)
-            );
-            return promisify(request);
+            return promisify(db.transaction([table], "readwrite").objectStore(table).add(value, key));
         },
         update: function (table, value, key) {
             assertName(table, "Table name");
-            const tx = db.transaction([table], "readwrite");
-            const store = tx.objectStore(table);
-            const request = (
-                key === undefined
-                ? store.put(value)
-                : store.put(value, key)
-            );
-            return promisify(request);
+            return promisify(db.transaction([table], "readwrite").objectStore(table).put(value, key));
         }
     });
 }
