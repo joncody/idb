@@ -13,19 +13,16 @@ A **lightweight**, **Promise-native** wrapper for the browser’s IndexedDB API�
 - 🧱 **Factory-based design**: No classes—just pure functions and frozen objects.
 - 📦 **Schema management**: Declarative index creation during upgrades.
 - 🔒 **Safe & immutable**: Returned client and upgrade objects are frozen.
-- 🌐 **Universal browser support**: Works in all modern browsers (Chrome, Firefox, Safari, Edge).
-- 🧪 **TypeScript-ready**: Clear, predictable method signatures.
+- 🌐 **Universal browser support**: Works in all modern browsers.
 
 ---
 
 ## 📦 Installation
 
-Just copy `idb.js` into your project.
-
-Import as an ES module:
+Place `src/idb.js` in your project and import it as an ES module:
 
 ```js
-import idb from './idb.js';
+import idb from './src/idb.js';
 ```
 
 ---
@@ -35,40 +32,48 @@ import idb from './idb.js';
 ### 1. Open a Database & Define Schema
 
 ```js
-import idb from './idb.js';
+import idb from './src/idb.js';
 
 // Open (or create) a database and define its structure
-const db = await idb.open('MyAppDB', 1, (event, upgrade) => {
-    upgrade.create('users', { keyPath: 'id' }, {
+const db = await idb.open("MyAppDB", 1, function (event, upgrade) {
+    upgrade.create("users", { keyPath: "id" }, {
         // Indexes: { name: [keyPath, options] }
-        byEmail: ['email', { unique: true }],
-        byName:  ['name']  // non-unique index
+        byEmail: ["email", { unique: true }],
+        byName:  ["name"]  // non-unique index
     });
 });
 
-console.log('✅ Database ready!');
+console.log("✅ Database ready!");
 ```
 
 ### 2. CRUD Operations (All Promises!)
 
 ```js
 // Insert
-await db.insert('users', { id: 1, name: 'Alice', email: 'alice@example.com' });
+await db.insert("users", {
+    email: "alice@example.com",
+    id: 1,
+    name: "Alice"
+});
 
 // Select by key
-const user = await db.select('users', 1);
+const user = await db.select("users", 1);
 
 // Select via index
-const byEmail = await db.selectIndex('users', 'byEmail', 'alice@example.com');
+const byEmail = await db.selectIndex("users", "byEmail", "alice@example.com");
 
 // Update
-await db.update('users', { id: 1, name: 'Alice Cooper', email: 'alice@example.com' });
+await db.update("users", {
+    email: "alice@example.com",
+    id: 1,
+    name: "Alice Cooper"
+});
 
 // Count
-const total = await db.count('users'); // → 1
+const total = await db.count("users"); // → 1
 
 // Delete
-await db.delete('users', 1);
+await db.delete("users", 1);
 
 // Close when done
 db.close();
@@ -77,8 +82,8 @@ db.close();
 ### 3. Delete a Database
 
 ```js
-await idb.delete('MyAppDB');
-console.log('🗑️ Database deleted.');
+await idb.delete("MyAppDB");
+console.log("🗑️ Database deleted.");
 ```
 
 ---
@@ -89,11 +94,8 @@ console.log('🗑️ Database deleted.');
 
 | Method | Returns | Description |
 |--------|--------|-------------|
-| `idb.open(name, [version], [onUpgrade])` | `Promise<client>` | Opens a database. If `version` is omitted, defaults to `1`. `onUpgrade` is called only if a version upgrade is needed. |
-| `idb.delete(name)` | `Promise<void>` | Deletes the database with the given name. |
-
-> 💡 You can omit `version` and pass only a function:  
-> `idb.open('DB', (e, u) => { ... })` → version defaults to `1`.
+| `idb.open(name, [version], [onUpgrade])` | `Promise<client>` | Opens a database. Defaults `version` to `1`. |
+| `idb.delete(name)` | `Promise<void>` | Deletes the specified database. |
 
 ---
 
@@ -105,18 +107,16 @@ Returned by `idb.open()`. All methods return **Promises**.
 
 | Method | Description |
 |--------|-------------|
-| `select(table, key)` | Get a record by primary key. |
-| `selectAll(table, [query], [count])` | Get all records (optionally filtered by `query`, limited by `count`). |
-| `selectAllKeys(table, [query], [count])` | Get all primary keys (same filtering). |
-| `selectIndex(table, index, key)` | Get a record via a secondary index. |
-| `insert(table, value, [key])` | Add a new record (`key` optional if `value` contains keyPath). |
-| `update(table, value, [key])` | Upsert a record (adds if missing, updates if exists). |
-| `delete(table, key)` | Delete a record by key. |
 | `clear(table)` | Delete all records in a table. |
-| `count(table, [query])` | Count records (optionally filtered). |
 | `close()` | Close the database connection. |
-
-> ⚠️ Each method creates its **own transaction**. For multi-operation transactions, you’d need to extend the API—but this keeps things simple and safe by default.
+| `count(table, [query])` | Count records (optionally filtered). |
+| `delete(table, key)` | Delete a record by key. |
+| `insert(table, value, [key])` | Add a new record. |
+| `select(table, key)` | Get a record by primary key. |
+| `selectAll(table, [query], [count])` | Get all records. |
+| `selectAllKeys(table, [query], [count])` | Get all primary keys. |
+| `selectIndex(table, index, key)` | Get a record via a secondary index. |
+| `update(table, value, [key])` | Upsert a record. |
 
 ---
 
@@ -126,41 +126,23 @@ Passed to the `onUpgrade` callback during `idb.open()`.
 
 | Method | Description |
 |--------|-------------|
-| `create(table, options, [schema])` | Create an object store. `schema` is an object like `{ indexName: [keyPath, options] }`. |
-| `delete(table)` | Delete an object store (during upgrade only). |
-
-#### Schema Format Example
-
-```js
-upgrade.create('products', { keyPath: 'id' }, {
-    byCategory: ['category'],
-    byPrice:    ['price', { unique: false }]
-});
-```
-
-> 🔧 Under the hood, this calls `store.createIndex('byCategory', 'category')`, etc.
+| `create(table, options, [schema])` | Create an object store with optional schema indexes. |
+| `delete(table)` | Delete an object store. |
 
 ---
 
-## 🧪 Error Handling
+## 🧪 Testing
 
-All operations **reject the Promise** on error:
+This library includes a zero-dependency, comprehensive browser-based verification suite.
 
-```js
-try {
-    await db.insert('users', { id: 1 });
-    await db.insert('users', { id: 1 }); // duplicate key → throws
-} catch (err) {
-    console.error('Failed:', err.message);
-}
-```
+To run the test suite:
 
-No global error events—errors flow naturally through Promise chains.
+1. Serve the repository using any static web server (e.g., Nginx, Caddy, or Python's `http.server`).
+2. Open `tests/index.html` in your browser (e.g., `http://localhost/tests/index.html`).
+3. View results visually on the page or open Developer Tools (`F12` -> **Console**) to inspect grouped log outputs and execution metrics.
 
 ---
 
 ## 📄 License
 
 See [LICENSE](./LICENSE) for details.
-
----
