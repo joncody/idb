@@ -1,18 +1,6 @@
-function get_global_environment() {
-    if (globalThis !== undefined) {
-        return globalThis;
-    }
-    if (window !== undefined) {
-        return window;
-    }
-    return undefined;
-}
-
-const global_env = get_global_environment();
-
 const indexed_db = (
-    (global_env !== undefined && global_env.indexedDB !== undefined)
-    ? global_env.indexedDB
+    (globalThis !== undefined && globalThis.indexedDB !== undefined)
+    ? globalThis.indexedDB
     : undefined
 );
 
