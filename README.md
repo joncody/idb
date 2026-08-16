@@ -1,5 +1,12 @@
 # `idb.js` – Promise-Based IndexedDB Wrapper
 
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Module: ESM](https://img.shields.io/badge/Module-ESM-blue.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+[![Dependencies: Zero](https://img.shields.io/badge/Dependencies-0-brightgreen.svg)]()
+[![Size: <1KB](https://img.shields.io/badge/Size-%3C1KB-blueviolet.svg)]()
+[![Storage: IndexedDB](https://img.shields.io/badge/Storage-IndexedDB-informational.svg)](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 A **lightweight**, **Promise-native** wrapper for the browser’s IndexedDB API—**no events, no callbacks, no clutter**.
 
 `idb.js` eliminates IndexedDB’s verbose transaction/request boilerplate with a clean, functional API. Every operation returns a Promise, making database code **simple, composable, and async/await–friendly**.
